@@ -1,0 +1,6 @@
+Se desarrollara un bot en Telegram que ayude a realizar el resgistro de signos vitales 
+de pacientes con problemas cardiovasculares, con el objetivo de ayudar a pacientes a tener
+un control mas efectivo en cuanto su estado de salud.
+
+El bot se registra con los el usuario @signos_vitales_bot y se encuentra en telegram con el 
+nombre de Bot Signos Vitales 
