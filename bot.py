@@ -17,7 +17,12 @@ def on_command_start(message):
 
 @bot.message_handler(commands=['help'])
 def on_command_help(message):
-    pass
+    bot.send_chat_action(message.chat.id, 'typing')
+    
+    bot.send_message(
+        message.chat.id,
+        logic.get_help(),
+        parse_mode="Markdown")
 
 @bot.message_handler(commands=['about'])
 def on_command_about(message):
@@ -41,7 +46,6 @@ def on_get_balance(message):
     nombreCompleto = parts[3]
 
     usuario = logic.get_paciente(documento)
-
     if usuario == None:
         #Usuario no existente se procede al registro
         logic.set_paciente(documento, nombreCompleto)
@@ -63,18 +67,9 @@ def on_spend_money(message):
 def on_list_earnings(message):
     pass
 
-@bot.message_handler(regexp=r"^(listar registros|lr)$")
-def on_list_spendings(message):
-    pass
-
 @bot.message_handler(regexp=r"^(ingresar observaciones|io)$")
 def on_remove_record(message):
     pass
-
-@bot.message_handler(regexp=r"^(listar cuentas|lc)$")
-def on_list_accounts(message):
-    pass
-
 
 @bot.message_handler(func=lambda message: True)
 def on_fallback(message):
