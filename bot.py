@@ -16,6 +16,8 @@ if __name__ == '__main__':
 def on_command_start(message):
     bot.send_chat_action(message.chat.id, 'typing')
 
+    print (message.from_user)
+
     bot.send_message (
         message.chat.id,
         logic.get_welcome_message(config.ASISTENTE_VIRTUAL,config.COMPANIA_SIGNOS),
@@ -85,14 +87,17 @@ def on_list_earnings(message):
 @bot.message_handler(regexp=r"^(ingresar observaciones|io)$")
 def on_remove_record(message):
     pass
+#############################################################################################
+# Mensaje por defecto que procesa los demás mensajes que coincidan 
+# con los comandos ingresados por el usuario
 
 @bot.message_handler(func=lambda message: True)
 def on_fallback(message):
     bot.send_chat_action(message.chat.id, 'typing')
-    sleep(1)
-    bot.reply_to(
-        message,
-        "\U0001F63F Ups, no entendí lo que me dijiste.")
+    sleep(1) 
+
+    response = logic.get_fallback_message (message.text, message.from_user.first_name, config.COMPANIA_SIGNOS)
+    bot.reply_to(message, response, parse_mode="Markdown")
 
 #########################################################
 

@@ -63,3 +63,14 @@ def register_account(user_id):
     return False
 '''
 #########################################################
+# Lógica del mensaje “fallback”
+def get_fallback_message (text,nombrePaciente,COMPANIA_SIGNOS):
+    response = (
+            f"\U0001F912 *{nombrePaciente}*, el comando o instrucción registrada no se identifica, "
+            f"revisa e intenta nuevamente.\n\n"
+            f"En *{COMPANIA_SIGNOS}* te acompañamos en el camino a tu bienestar, si requieres ayuda en cualquier "
+            f"momento puedes ejecutar el comando /help"
+   
+        )
+   
+    return response
