@@ -11,9 +11,24 @@ if __name__ == '__main__':
     db.Base.metadata.create_all(db.engine)
 #########################################################
 
+# Comando de Inicio del bot
 @bot.message_handler(commands=['start'])
 def on_command_start(message):
-    pass
+    bot.send_chat_action(message.chat.id, 'typing')
+
+    bot.send_message (
+        message.chat.id,
+        logic.get_welcome_message(config.ASISTENTE_VIRTUAL,config.COMPANIA_SIGNOS),
+        parse_mode="Markdown")
+    
+    bot.send_message (
+        message.chat.id,
+        logic.get_help(),
+        parse_mode="Markdown")
+    
+    #logic.register_account(message.from_user.id)
+
+#########################################################
 
 @bot.message_handler(commands=['help'])
 def on_command_help(message):

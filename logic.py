@@ -36,3 +36,30 @@ def set_paciente(documento, nombreCompleto):
     db.session.commit()
 
     return True
+
+#########################################################
+# Lógica bienvenida e inicio al bot
+def get_welcome_message(ASISTENTE_VIRTUAL,COMPANIA_SIGNOS):
+    response = (
+            f"Hola, soy *{ASISTENTE_VIRTUAL}* el asistente virtual de *{COMPANIA_SIGNOS}* "
+            f"y quiero ayudarte con el registro y/o consulta de los signos vitales.\n\n"
+            "¡Recuerda que nuestra comunicación debe ser por texto!"
+        )
+    return response
+
+#########################################################
+# Lógica de registro del ID del usuario de telegram a la base de datos
+'''
+def register_account(user_id):
+    account = db.session.query(Account).get(user_id)
+    db.session.commit()
+
+    if account == None:
+        account = Account(user_id, 0)
+        db.session.add(account)
+        db.session.commit()
+        return True
+
+    return False
+'''
+#########################################################
