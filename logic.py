@@ -43,7 +43,7 @@ def get_welcome_message(ASISTENTE_VIRTUAL,COMPANIA_SIGNOS):
     response = (
             f"Hola, soy *{ASISTENTE_VIRTUAL}* el asistente virtual de *{COMPANIA_SIGNOS}* "
             f"y quiero ayudarte con el registro y/o consulta de los signos vitales.\n\n"
-            "¡Recuerda que nuestra comunicación debe ser por texto!"
+            "¡Recuerda que nuestra comunicación debe ser por texto !"
         )
     return response
 
