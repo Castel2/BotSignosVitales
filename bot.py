@@ -4,7 +4,12 @@ from time import sleep
 import re
 import database.db as db
 
-import logic
+#import logic
+
+from modules import  GestorConsultas
+from modules import  GestorMediciones
+from modules import  GestorObservaciones
+from modules import  GestorPacientes
 
 #########################################################
 if __name__ == '__main__':
