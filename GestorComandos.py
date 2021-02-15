@@ -41,11 +41,25 @@ def on_command_help(message):
         message.chat.id,
         GestorConversacion.get_help(),
         parse_mode="Markdown")
+'''
+@bot.message_handler(commands=['about'])
+def on_command_about(message):
+    bot.send_chat_action(message.chat.id, 'typing')
+    
+    bot.send_message(
+        message.chat.id,
+        GestorConversacion.get_about(),
+        parse_mode="Markdown")
+'''
 
 @bot.message_handler(commands=['about'])
 def on_command_about(message):
-    pass
-
+    bot.send_chat_action(message.chat.id, 'typing')
+    
+    bot.send_message(
+        message.chat.id,
+        GestorConversacion.get_about(config.VERSION),
+        parse_mode="Markdown")
 
 @bot.message_handler(regexp=r"^(registrar signos|rs)$")
 def on_get_balance(message):
