@@ -4,7 +4,7 @@ from time import sleep
 import re
 import database.db as db
 
-#import logic
+import logic
 
 from modules import  GestorConsultas
 from modules import  GestorMediciones
