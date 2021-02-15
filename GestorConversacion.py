@@ -6,6 +6,11 @@ import database.db as db
 
 import logic
 
+from modules import  GestorConsultas
+from modules import  GestorMediciones
+from modules import  GestorObservaciones
+from modules import  GestorPacientes
+
 #########################################################
 if __name__ == '__main__':
     db.Base.metadata.create_all(db.engine)
