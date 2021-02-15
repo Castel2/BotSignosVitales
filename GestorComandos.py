@@ -4,7 +4,10 @@ from time import sleep
 import re
 import database.db as db
 
+import GestorConsultas
 import GestorConversacion
+import GestorMediciones
+import GestorObservaciones
 import GestorPacientes
 
 #########################################################
