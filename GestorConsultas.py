@@ -4,9 +4,9 @@ from sqlalchemy import extract
 from models.Usuario import Usuario
 from models.Medicion import Medicion
 
-def get_balance (user_id):
-    medicion = db.session.query(Medicion).get(user_id)
+def get_signos (user_id):
+    signos = db.session.query(Medicion).get(user_id)
     db.session.commit()
-    if not medicion:
+    if not signos:
         return None
-    return medicion
+    return signos

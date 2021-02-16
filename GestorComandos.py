@@ -92,7 +92,14 @@ def on_set_paciente(message):
 
 @bot.message_handler(regexp=r"^(consultar signos|cs)$")
 def on_get_signos(message):
-    pass
+    bot.send_chat_action(message.chat.id, 'typing')
+    text = ""
+    signos = GestorConsultas.get_signos
+    text = "``` Listado de los signos del usuario:\n\n"
+    for medida in signos:
+        text += f"| {signos} | ${signos} |\n"
+    text += "```"
+    bot.reply_to(message, text, parse_mode="Markdown")
 
 @bot.message_handler(regexp=r"^(eliminar signos|es)$")
 def on_delete_signos(message):
