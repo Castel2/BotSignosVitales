@@ -54,26 +54,43 @@ def on_command_about(message):
         GestorConversacion.get_about(config.VERSION),
         parse_mode="Markdown")
 
-@bot.message_handler(regexp=r"^(registrar signos|rs)$")
+@bot.message_handler(regexp=r"^(registrar signos|rs) ([0-9]*) ([0-9]*) ([0-9]*) ([0-9]*[.]?[0-9]*) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))$")
 def on_set_signos(message):
-    pass
-
-@bot.message_handler(regexp=r"^(registrar paciente|rp) ([0-9]*) ([a-zA-Z ]*)$")
-def on_set_paciente(message):
     bot.send_chat_action(message.chat.id, 'typing')
- 
-    parts = re.match(r"^(registrar paciente|rp) ([0-9]*) ([a-zA-Z ]*)$",message.text)
+
+    parts = re.match(r"^(registrar signos|rs) ([0-9]*) ([0-9]*) ([0-9]*) ([0-9]*[.]?[0-9]*) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))$",message.text)
         
     #print(parts[2])
     #print(parts[3])
+    #print(parts[4])
+    #print(parts[5])
+    #print(parts[6])
+
+    pas = int(parts[2])
+    pad = int(parts[3])
+    fc = int(parts[4])
+    peso = float(parts[5])
+    fecha_toma = parts[6]
+
+    bot.send_message(
+            message.chat.id,
+            GestorConversacion.get_registro_signos(message.chat.first_name + " " + message.chat.last_name, pas, pad, fc, peso, fecha_toma),
+            parse_mode="Markdown")
+
+    bot.register_next_step_handler(message, GestorMediciones.step_2_registro_signos, pas, pad, fc, peso, fecha_toma)
+
+@bot.message_handler(regexp=r"^(registrar paciente|rp) ([0-9]*)$")
+def on_set_paciente(message):
+    bot.send_chat_action(message.chat.id, 'typing')
+
+    parts = re.match(r"^(registrar paciente|rp) ([0-9]*)$", message.text)        
 
     documento = int(parts[2])
-    nombreCompleto = parts[3]
 
     usuario = GestorPacientes.get_paciente(documento)
     if usuario == None:
         #Usuario no existente se procede al registro
-        GestorPacientes.set_paciente(documento, nombreCompleto)
+        GestorPacientes.set_paciente(message.from_user.id, documento, message.chat.first_name + " " + message.chat.last_name)
         bot.reply_to(message, f"Paciente registrado.")
     else:
         bot.reply_to(message, f"Paciente ya registrado.")

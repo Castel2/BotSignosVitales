@@ -1,5 +1,5 @@
 import database.db as db
-from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy import Column, Integer, String, Float, Date, Time, DateTime, ForeignKey, func
 from sqlalchemy.orm import relationship
 
 class Observacion(db.Base):
@@ -7,12 +7,12 @@ class Observacion(db.Base):
     
     id = Column('id', Integer, primary_key=True, autoincrement=True)
     idMedicion = Column('idMedicion', Integer, ForeignKey('mediciones.id',onupdate='CASCADE', ondelete='CASCADE'), nullable=False)
-    documentoUsuario = Column('documentoUsuario', Integer, ForeignKey('usuarios.documento',onupdate='CASCADE', ondelete='CASCADE'), nullable=False)
-    observacion = Column('observacion', String(2000), back_populates='usuarios')
+    id_user_tel = Column('id_user_tel', Integer, ForeignKey('usuarios.id_user_tel',onupdate='CASCADE', ondelete='CASCADE'), nullable=False)
+    observacion = Column('observacion', String(2000), back_populates='observaciones')
 
-    def __init__(self, idMedicion, documentoUsuario, observacion):
+    def __init__(self, idMedicion, id_user_tel, observacion):
         self.idMedicion = idMedicion
-        self.documentoUsuario = documentoUsuario
+        self.id_user_tel = id_user_tel
         self.observacion = observacion
 
     def __repr__(self):
