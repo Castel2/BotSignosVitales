@@ -44,16 +44,6 @@ def on_command_help(message):
         message.chat.id,
         GestorConversacion.get_help(),
         parse_mode="Markdown")
-'''
-@bot.message_handler(commands=['about'])
-def on_command_about(message):
-    bot.send_chat_action(message.chat.id, 'typing')
-    
-    bot.send_message(
-        message.chat.id,
-        GestorConversacion.get_about(),
-        parse_mode="Markdown")
-'''
 
 @bot.message_handler(commands=['about'])
 def on_command_about(message):
@@ -72,6 +62,9 @@ def on_set_signos(message):
 def on_set_paciente(message):
     bot.send_chat_action(message.chat.id, 'typing')
 
+    ############Propone Elan:##############
+    #nombre_Usuario = str(message.chat.first_name + " " + message.chat.last_name)
+    
     parts = re.match(r"^(registrar paciente|rp) ([0-9]*) ([a-zA-Z ]*)$",message.text)
         
     #print(parts[2])
@@ -88,14 +81,22 @@ def on_set_paciente(message):
     else:
         bot.reply_to(message, f"Paciente ya registrado.")
     
+@bot.message_handler(regexp=r"^(eliminar signos|es) ([0-9]+)$")
+def on_delete_signos(message):
+    
+    parts = re.match(r"^(eliminar signos|es) ([0-9]+)$",message.text)
+    
+    id_medicion = int(parts[2])
 
+
+   
+    id_usuario = int(message.chat.id)
+
+    print(id_medicion)
+    print(id_usuario)
 
 @bot.message_handler(regexp=r"^(consultar signos|cs)$")
 def on_get_signos(message):
-    pass
-
-@bot.message_handler(regexp=r"^(eliminar signos|es)$")
-def on_delete_signos(message):
     pass
 
 @bot.message_handler(regexp=r"^(consultar pacientes|cp)$")
