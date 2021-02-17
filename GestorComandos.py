@@ -59,7 +59,7 @@ def on_set_signos(message):
     bot.send_chat_action(message.chat.id, 'typing')
 
     parts = re.match(r"^(registrar signos|rs) ([0-9]*) ([0-9]*) ([0-9]*) ([0-9]*[.]?[0-9]*) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))$",message.text)
-
+        
     #print(parts[2])
     #print(parts[3])
     #print(parts[4])
@@ -95,13 +95,22 @@ def on_set_paciente(message):
     else:
         bot.reply_to(message, f"Paciente ya registrado.")
     
+@bot.message_handler(regexp=r"^(eliminar signos|es) ([0-9]+)$")
+def on_delete_signos(message):
+    
+    parts = re.match(r"^(eliminar signos|es) ([0-9]+)$",message.text)
+    
+    id_medicion = int(parts[2])
+
+
+   
+    id_usuario = int(message.chat.id)
+
+    print(id_medicion)
+    print(id_usuario)
 
 @bot.message_handler(regexp=r"^(consultar signos|cs)$")
 def on_get_signos(message):
-    pass
-
-@bot.message_handler(regexp=r"^(eliminar signos|es)$")
-def on_delete_signos(message):
     pass
 
 @bot.message_handler(regexp=r"^(consultar pacientes|cp)$")

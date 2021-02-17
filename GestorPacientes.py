@@ -6,9 +6,12 @@ from models.Usuario import Usuario
 #########################################################
 # Lógica bienvenida e inicio al bot
 def get_paciente (documento):
-    usuario = db.session.query(Usuario).filter(Usuario.documento==documento)
-    db.session.commit()
-    
+
+    print(documento)
+
+    usuario = db.session.query(Usuario).filter(Usuario.documento == documento).all()
+    db.session.commit()    
+
     if not usuario:
         return None
         
