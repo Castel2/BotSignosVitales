@@ -61,10 +61,7 @@ def on_set_signos(message):
 @bot.message_handler(regexp=r"^(registrar paciente|rp) ([0-9]*) ([a-zA-Z ]*)$")
 def on_set_paciente(message):
     bot.send_chat_action(message.chat.id, 'typing')
-
-    ############Propone Elan:##############
-    #nombre_Usuario = str(message.chat.first_name + " " + message.chat.last_name)
-    
+ 
     parts = re.match(r"^(registrar paciente|rp) ([0-9]*) ([a-zA-Z ]*)$",message.text)
         
     #print(parts[2])
@@ -84,16 +81,14 @@ def on_set_paciente(message):
 @bot.message_handler(regexp=r"^(eliminar signos|es) ([0-9]+)$")
 def on_delete_signos(message):
     
-    parts = re.match(r"^(eliminar signos|es) ([0-9]+)$",message.text)
+    parts = re.match(r"^(eliminar signos|es) ([0-9]+)$", message.text, flags=re.IGNORECASE)
     
+    id_usuario = int(message.from_user.id)
     id_medicion = int(parts[2])
-
-
-   
-    id_usuario = int(message.chat.id)
-
-    print(id_medicion)
+    
     print(id_usuario)
+    print(id_medicion)
+   
 
 @bot.message_handler(regexp=r"^(consultar signos|cs)$")
 def on_get_signos(message):
