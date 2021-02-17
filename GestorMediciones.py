@@ -35,23 +35,24 @@ def get_paciente (documento):
 
 
 ##################################################################################################
-<<<<<<< HEAD
 # Eliminar signos”   
-def remove_earning (user_id, index):
-    record = db.session.query(Earning).filter(
-    Earning.accounts_id == user_id
+def eliminar_signo (user_id, index):
+    record = db.session.query(Medicion).filter(
+    Medicion.id_user_tel == user_id
     ).filter(
-    Earning.id == index
+    Medicion.id == index
     ).first()
     
+    print(record)
+
+    '''
     if not record:
-    control = update_account(user_id, record.amount * -1)
+        control = update_account(user_id, record.amount * -1)
     if not control:
-    db.session.rollback()
+        db.session.rollback()
     return False
     db.session.delete(record)
     db.session.commit()
+    '''
     return True
 ######################################################################################################
-=======
-
