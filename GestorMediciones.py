@@ -5,19 +5,20 @@ from models.Usuario import Usuario
 
 
 ##################################################################################################
-# Mensaje del Comando “ABOUT”   
-def on_delete_signos(id, ):
-    response = (
-        f"Bot Registro Signos Vitales (pyTelegramBot) v{VERSION}"
-        "\n\n"
-        "Desarrollado por los estudiantes de la Especializacion de Ingeniería de Software de la Universidad Autónoma de Manizales:\n\n"
-        "   Hector Daniel Cardona <hectord.cardonal@autonoma.edu.co>\n"
-        "   Yordan Castelblanco<yordan.castelblancoj@autonoma.edu.co> \n"
-        "   Juan Alberto Vidal <juana.vidalg@autonoma.edu.co> \n"
-        "   Elan Fco. Perea <elanf.pereaa@autonoma.edu.co> \n\n"
-
-        "2021"
-    )
-    return response
-
+# Eliminar signos”   
+def remove_earning (user_id, index):
+    record = db.session.query(Earning).filter(
+    Earning.accounts_id == user_id
+    ).filter(
+    Earning.id == index
+    ).first()
+    
+    if not record:
+    control = update_account(user_id, record.amount * -1)
+    if not control:
+    db.session.rollback()
+    return False
+    db.session.delete(record)
+    db.session.commit()
+    return True
 ######################################################################################################
