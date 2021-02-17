@@ -76,3 +76,18 @@ def get_fallback_message (text,nombrePaciente,COMPANIA_SIGNOS):
         )
    
     return response
+
+def get_registro_signos (nombrePaciente, pas, pad, fc, peso, fecha_toma):
+    response = (
+            f"\U0001F912 *{nombrePaciente}*, los datos registrados son: \n\n"
+            f"Presión arterial sistólica: {pas} mmHg\n"
+            f"Presión arterial diastólica: {pad} mmHg\n"
+            f"Frecuencia cardiaca: {fc} latidos por minuto\n"
+            f"Peso: {peso} kg\n"
+            f"Fecha y Hora de toma: {fecha_toma}\n"
+            f"\n"
+            f"*1.* Guardar\n"
+            f"*2.* Cancelar\n"
+        )
+   
+    return response
