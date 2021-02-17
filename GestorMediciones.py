@@ -6,7 +6,7 @@ from models.Usuario import Usuario
 
 ##################################################################################################
 # Mensaje del Comando “ABOUT”   
-def get_about(VERSION):
+def on_delete_signos(id, ):
     response = (
         f"Bot Registro Signos Vitales (pyTelegramBot) v{VERSION}"
         "\n\n"
