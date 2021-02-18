@@ -130,11 +130,12 @@ def on_delete_signos(message):
 @bot.message_handler(regexp=r"^(consultar signos|cs)$")
 def on_get_signos(message):
     bot.send_chat_action(message.chat.id, 'typing')
-    text = ""
-    signos = GestorConsultas.get_signos
-    text = "``` Listado de los signos del usuario:\n\n"
-    for medida in signos:
-        text += f"| {signos} | ${signos} |\n"
+    text = message.chat.first_name
+    signos = GestorConsultas.get_signos(message.from_user.id) 
+    text = "``` Listado de los signos del usuario: " + text + "\n\n"
+    text += f"| Sistolica | Diastolica | F.Cardiaca | Peso |\n"
+    for sv in signos:
+        text += f"| {sv.pas}       | {sv.pad}         | {sv.fc}         | {sv.peso} |\n"
     text += "```"
     bot.reply_to(message, text, parse_mode="Markdown")
 
@@ -164,6 +165,6 @@ def on_fallback(message):
 #########################################################
 
 if __name__ == '__main__':
-    bot.polling(timeout=2)
+    bot.polling(timeout=1)
 #########################################################
 
