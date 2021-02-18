@@ -1,4 +1,4 @@
-from config import bot
+cd ..from config import bot
 import config
 from time import sleep
 import re
@@ -27,14 +27,18 @@ def on_command_start(message):
         GestorConversacion.get_welcome_message(config.ASISTENTE_VIRTUAL,config.COMPANIA_SIGNOS),
         parse_mode="Markdown")
     
+    #Mensaje de bienvenida donde valida si el usuario usa el bot
     bot.send_message (
         message.chat.id,
-        GestorConversacion.get_help(),
-        parse_mode="Markdown")
+        GestorConversacion.get_validacion_paciente(message.from_user.id,message.from_user.first_name,
+            config.COMPANIA_SIGNOS),
+        parse_mode="Markdown")  
+    
     
     #logic.register_account(message.from_user.id)
 
 #########################################################
+
 
 @bot.message_handler(commands=['help'])
 def on_command_help(message):
