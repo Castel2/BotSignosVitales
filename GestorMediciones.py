@@ -29,45 +29,42 @@ def step_2_registro_signos(message, pas, pad, fc, peso, fecha_toma):
     else:
         bot.reply_to(message, f"Comando no reconocido, inicie el proceso nuevamente.")
 
-def get_paciente (documento):
-
-    pass
-
-
 ##################################################################################################
-# Eliminar signos”   
+# Eliminar signos”  PARA CONSULTAR  
+def eliminar_signos_consulta(user_id, index):
 
-def eliminar_signos(user_id, index):
-
-    print(user_id)
-    print(index)
-
-    consulta = db.session.query(Medicion).filter(
+    #se guarda la consulta en la variable signo
+    signo = db.session.query(Medicion).filter(
     Medicion.id_user_tel == user_id
     ).filter(
     Medicion.id == index
     ).first()
 
-    #consulta = db.session.query(Medicion).get(index)
-    
-    print(consulta)
-
-    
-    if not consulta:
+    #si no hay nada en signos
+    if not signo:
+        db.session.rollback()
         return None
     
-    return True
+    #Si hay un registro en signos
+    return signo
 
+# La confirmación de la eliminación de la medición.
+def eliminar_signos(message, index):
+    print("confirmacion eliminación")
 
+    signo = db.session.query(Medicion).get(index)
 
-    
-    '''
-    if not control:
-        db.session.rollback()
-    return False
-    db.session.delete(record)
-    db.session.commit()
-    
-    return True
-    '''
+    print(signo.id)
+
+    #Confirmacion positiva de eliminar
+    if message.text == "1":
+        db.session.delete(signo)
+        db.session.commit()
+
+        bot.send_message(message.chat.id,"*Registro eliminado con exito.*",parse_mode="Markdown")
+    elif message.text == "2":
+        bot.reply_to(message, f"Proceso cancelado por el usuario.")
+    else:
+        bot.reply_to(message, f"Comando no reconocido, inicie el proceso nuevamente.")
+
 ######################################################################################################

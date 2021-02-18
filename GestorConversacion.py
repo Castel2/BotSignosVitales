@@ -19,7 +19,7 @@ def get_validacion_paciente(user_id_telegram, nombre_user,COMPANIA_SIGNOS):
     usuario = db.session.query(Usuario).get(user_id_telegram)
     db.session.commit()
 
-    if usuario == None:
+    if not usuario:
         response = (
             f"*{nombre_user}*, hemos identificado que no estás registrado en el sistema.\n\n"
             f"*{COMPANIA_SIGNOS}* te brinda la bienvenida y para guiarte en el registro de tus signos vitales, " 
@@ -72,10 +72,10 @@ def get_help():
 
  
 ##################################################################################################
-# Mensaje del Comando “ABOUT”   
+# Mensaje del Comando “ABOUT”  
 def get_about(VERSION):
     response = (
-        f"Bot Registro Signos Vitales (pyTelegramBot) v{VERSION}"
+        f"Bot Registro Signos Vitales (pyTelegramBot) v*{VERSION}*"
         "\n\n"
         "Desarrollado por los estudiantes de la Especializacion de Ingeniería de Software de la Universidad Autónoma de Manizales:\n\n"
         "   Hector Daniel Cardona <hectord.cardonal@autonoma.edu.co>\n"
@@ -110,6 +110,23 @@ def get_registro_signos (nombrePaciente, pas, pad, fc, peso, fecha_toma):
             f"Fecha y Hora de toma: {fecha_toma}\n"
             f"\n"
             f"*1.* Guardar\n"
+            f"*2.* Cancelar\n"
+        )
+   
+    return response
+
+def get_signo_eliminar (nombrePaciente, id_medicion, pas, pad, fc, peso, fecha_toma, fecha_registro):
+    response = (
+            f"\U0001F4C6 *Fecha y Hora del registro: {fecha_registro}*\n\n"
+            f"  *{nombrePaciente}*, los datos de la medicion con *ID: {id_medicion}*\n\n"
+            f"  Presión arterial sistólica: {pas} mmHg\n"
+            f"  Presión arterial diastólica: {pad} mmHg\n"
+            f"  Frecuencia cardiaca: {fc} latidos por minuto\n"
+            f"  Peso: {peso} kg\n"
+            f"  Fecha y Hora de toma: {fecha_toma}\n\n"
+            
+            f"\U000026A0¿Desea eliminar la medición?\n\n"
+            f"*1.* Eliminar\n"
             f"*2.* Cancelar\n"
         )
    

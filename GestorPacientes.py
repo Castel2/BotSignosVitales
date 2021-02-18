@@ -24,3 +24,20 @@ def set_paciente(id_user_tel, documento, nombreCompleto):
     db.session.commit()
 
     return True
+
+#funcion exclusiva para validar la exitencia de un paciente... retorna True o False
+def existencia_paciente (user_id):
+
+    print(user_id)
+    tipo_Usuario = 1
+
+    usuario = db.session.query(Usuario).filter(
+    Usuario.id_user_tel == user_id
+    ).filter(
+    Usuario.tipoUsuario == tipo_Usuario
+    ).first()   
+
+    if not usuario:
+        return False
+        
+    return True

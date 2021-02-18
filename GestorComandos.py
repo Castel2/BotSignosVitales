@@ -110,23 +110,52 @@ def on_set_paciente(message):
         bot.reply_to(message, f"Paciente ya registrado.")
 
 #########################################################
-# Comando para eliminar los signos vitales
+# Comando para eliminar los signos vitales 
   
 @bot.message_handler(regexp=r"^(eliminar signos|es) ([0-9]+)$")
 def on_delete_signos(message):
-    
+    #se particiona el mensaje
     parts = re.match(r"^(eliminar signos|es) ([0-9]+)$", message.text, flags=re.IGNORECASE)
-    
+
+    #se guarda el id del usuario y id de la medicion
     id_usuario = int(message.from_user.id)
     id_medicion = int(parts[2])
-    
-    #print(id_usuario)
-    #print(id_medicion)
-    
-    respuesta = GestorMediciones.eliminar_signos(id_usuario,id_medicion)
 
-    print(respuesta)
-   
+    #Se llama la funcion que consulta en la base de datos las mediciones. 
+    signo_borrar = GestorMediciones.eliminar_signos_consulta(id_usuario,id_medicion)
+    
+    #Si el paciente no está registrado
+    if not GestorPacientes.existencia_paciente(id_usuario):
+        bot.reply_to(message, f"\U0001F614 *{message.from_user.first_name}*, no puedes implementar este comando, ya que no esta registrado.", parse_mode="Markdown")
+
+        return bot.send_message (
+        message.chat.id,
+        GestorConversacion.get_validacion_paciente(message.from_user.id,message.from_user.first_name, config.COMPANIA_SIGNOS),
+        parse_mode="Markdown")  
+    
+    if not signo_borrar:
+        return bot.reply_to(message, 
+        f"\U0001F928 *{message.from_user.first_name}*, "
+        f"No has regitrado signos con el id: {id_medicion}\n\n" "Verifica e intenta nuevamente, puedes usar el comando:\n\n"
+        "*consultar signos|cs {Fecha inicial (dd-mm-aaaa)} {Fecha Final (dd-mm-aaaa)}* - para consultar sus signos registrados"
+        ,parse_mode="Markdown")    
+    
+    #Mostar Signo a Eliminar y solicitar confimacion de eliminacion
+    bot.send_message(message.chat.id,
+    GestorConversacion.get_signo_eliminar (
+    message.chat.first_name + " " + message.chat.last_name, 
+    signo_borrar.id,
+    signo_borrar.pas, 
+    signo_borrar.pad, 
+    signo_borrar.fc, 
+    signo_borrar.peso, 
+    signo_borrar.fecha_toma,
+    signo_borrar.fecha_registro),
+    parse_mode="Markdown")
+
+    #Recibir confirmacion de elminiacion y ejecutar la acción
+    bot.register_next_step_handler(message, GestorMediciones.eliminar_signos, signo_borrar.id)
+      
 @bot.message_handler(regexp=r"^(consultar signos|cs) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$")
 def on_get_signos(message):
     bot.send_chat_action(message.chat.id, 'typing')
@@ -165,6 +194,6 @@ def on_fallback(message):
 #########################################################
 
 if __name__ == '__main__':
-    bot.polling(timeout=2)
+    bot.polling(timeout=1)
 #########################################################
 
