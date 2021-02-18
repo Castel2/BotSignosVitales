@@ -156,7 +156,8 @@ def on_delete_signos(message):
     #Recibir confirmacion de elminiacion y ejecutar la acción
     bot.register_next_step_handler(message, GestorMediciones.eliminar_signos, signo_borrar.id)
       
-@bot.message_handler(regexp=r"^(consultar signos|cs) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$")
+#@bot.message_handler(regexp=r"^(consultar signos|cs) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$")
+@bot.message_handler(regexp=r"^(consultar signos|cs)$")
 def on_get_signos(message):
     bot.send_chat_action(message.chat.id, 'typing')
     text = message.chat.first_name
