@@ -107,10 +107,12 @@ def on_delete_signos(message):
     id_usuario = int(message.from_user.id)
     id_medicion = int(parts[2])
     
-    print(id_usuario)
-    print(id_medicion)
+    #print(id_usuario)
+    #print(id_medicion)
+    
+    respuesta = GestorMediciones.eliminar_signos(id_usuario,id_medicion)
 
-   # GestorMediciones.eliminar_signos(id_usuario, id_medicion)
+    print(respuesta)
    
 @bot.message_handler(regexp=r"^(consultar signos|cs)$")
 def on_get_signos(message):
