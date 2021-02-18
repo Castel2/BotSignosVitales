@@ -5,8 +5,8 @@ class Usuario(db.Base):
 
     __tablename__ = 'usuarios'
 
-    id_user_tel = Column('id_user_tel', Integer)
-    documento = Column('documento', Integer, primary_key=True, nullable=False)
+    id_user_tel = Column('id_user_tel', Integer,primary_key=True)
+    documento = Column('documento',Integer,  nullable=False)
     tipoUsuario = Column('tipoUsuario', Integer, server_default='1')
     nombreCompleto = Column('nombreCompleto', String(500), nullable=False)
 

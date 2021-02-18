@@ -35,10 +35,8 @@ def on_command_start(message):
         parse_mode="Markdown")  
     
     
-    #logic.register_account(message.from_user.id)
-
 #########################################################
-
+# Comando de ayuda para los usuarios del bot
 
 @bot.message_handler(commands=['help'])
 def on_command_help(message):
@@ -58,6 +56,15 @@ def on_command_about(message):
         GestorConversacion.get_about(config.VERSION),
         parse_mode="Markdown")
 
+#########################################################
+# Comando para registrar los signos vitales el usuario en el cual debe registrar:
+'''
+Presión arterial sistólica
+Presión arterial diastólica
+Frecuencia cardiaca
+Peso
+Fecha y Hora de toma
+'''
 @bot.message_handler(regexp=r"^(registrar signos|rs) ([0-9]*) ([0-9]*) ([0-9]*) ([0-9]*[.]?[0-9]*) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))$")
 def on_set_signos(message):
     bot.send_chat_action(message.chat.id, 'typing')
@@ -83,6 +90,9 @@ def on_set_signos(message):
 
     bot.register_next_step_handler(message, GestorMediciones.step_2_registro_signos, pas, pad, fc, peso, fecha_toma)
 
+#########################################################
+# Comando para registrar pacientes donde solo debe colocar el número de identificación sin comas y puntos
+
 @bot.message_handler(regexp=r"^(registrar paciente|rp) ([0-9]*)$")
 def on_set_paciente(message):
     bot.send_chat_action(message.chat.id, 'typing')
@@ -98,7 +108,10 @@ def on_set_paciente(message):
         bot.reply_to(message, f"Paciente registrado.")
     else:
         bot.reply_to(message, f"Paciente ya registrado.")
-    
+
+#########################################################
+# Comando para eliminar los signos vitales
+  
 @bot.message_handler(regexp=r"^(eliminar signos|es) ([0-9]+)$")
 def on_delete_signos(message):
     
@@ -151,6 +164,6 @@ def on_fallback(message):
 #########################################################
 
 if __name__ == '__main__':
-    bot.polling(timeout=1)
+    bot.polling(timeout=2)
 #########################################################
 
