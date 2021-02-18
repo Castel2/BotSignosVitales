@@ -14,6 +14,29 @@ def get_welcome_message(ASISTENTE_VIRTUAL,COMPANIA_SIGNOS):
     return response
 
 #########################################################
+#Lógica de validación de existencia de usuario registrado en el bot
+def get_validacion_paciente(user_id_telegram, nombre_user,COMPANIA_SIGNOS):
+    usuario = db.session.query(Usuario).get(user_id_telegram)
+    db.session.commit()
+
+    if usuario == None:
+        response = (
+            f"*{nombre_user}*, hemos identificado que no estás registrado en el sistema.\n\n"
+            f"*{COMPANIA_SIGNOS}* te brinda la bienvenida y para guiarte en el registro de tus signos vitales, " 
+            f"escribe tu número de identificación (sin puntos o comas).\n\n" 
+            
+            "¡Usa el comando: registrar paciente !"
+        )
+    else:
+        response = (
+             f"*{nombre_user}*, bienvenido y quiero ayudarte con el registro de tus signos vitales. \n\n"
+
+              "¡Por favor escriba el comando para registrar o consultar sus datos !"
+        )
+    return response
+
+    
+#########################################################
 # Lógica de registro del ID del usuario de telegram a la base de datos
 '''
 def register_account(user_id):

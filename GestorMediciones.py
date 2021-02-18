@@ -36,23 +36,38 @@ def get_paciente (documento):
 
 ##################################################################################################
 # Eliminar signos”   
-def eliminar_signo (user_id, index):
-    record = db.session.query(Medicion).filter(
+
+def eliminar_signos(user_id, index):
+
+    print(user_id)
+    print(index)
+
+    consulta = db.session.query(Medicion).filter(
     Medicion.id_user_tel == user_id
     ).filter(
     Medicion.id == index
     ).first()
-    
-    print(record)
 
+    #consulta = db.session.query(Medicion).get(index)
+    
+    print(consulta)
+
+    
+    if not consulta:
+        return None
+    
+    return True
+
+
+
+    
     '''
-    if not record:
-        control = update_account(user_id, record.amount * -1)
     if not control:
         db.session.rollback()
     return False
     db.session.delete(record)
     db.session.commit()
-    '''
+    
     return True
+    '''
 ######################################################################################################
