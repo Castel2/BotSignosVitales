@@ -1,4 +1,4 @@
-cd ..from config import bot
+from config import bot
 import config
 from time import sleep
 import re
