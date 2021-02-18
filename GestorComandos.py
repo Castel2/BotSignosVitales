@@ -36,6 +36,7 @@ def on_command_start(message):
 
 #########################################################
 
+
 @bot.message_handler(commands=['help'])
 def on_command_help(message):
     bot.send_chat_action(message.chat.id, 'typing')
