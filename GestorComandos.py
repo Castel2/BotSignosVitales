@@ -127,9 +127,17 @@ def on_delete_signos(message):
 
     print(respuesta)
    
-@bot.message_handler(regexp=r"^(consultar signos|cs)$")
+@bot.message_handler(regexp=r"^(consultar signos|cs) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$")
 def on_get_signos(message):
-    pass
+    bot.send_chat_action(message.chat.id, 'typing')
+    text = message.chat.first_name
+    signos = GestorConsultas.get_signos(message.from_user.id) 
+    text = "``` Listado de los signos del usuario: " + text + "\n\n"
+    text += f"| Sistolica | Diastolica | F.Cardiaca | Peso |\n"
+    for sv in signos:
+        text += f"| {sv.pas}       | {sv.pad}         | {sv.fc}         | {sv.peso} |\n"
+    text += "```"
+    bot.reply_to(message, text, parse_mode="Markdown")
 
 @bot.message_handler(regexp=r"^(consultar pacientes|cp)$")
 def on_get_paciente(message):
@@ -157,6 +165,6 @@ def on_fallback(message):
 #########################################################
 
 if __name__ == '__main__':
-    bot.polling(timeout=2)
+    bot.polling(timeout=1)
 #########################################################
 
