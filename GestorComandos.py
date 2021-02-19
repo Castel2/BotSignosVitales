@@ -155,19 +155,36 @@ def on_delete_signos(message):
 
     #Recibir confirmacion de elminiacion y ejecutar la acción
     bot.register_next_step_handler(message, GestorMediciones.eliminar_signos, signo_borrar.id)
+ 
+
+#########################################################
+# Comando para comnsultar mis signos vitales, recibe dos fechas como parametros inicial y final respectivamente en formato yyyy-mm-dd
       
-#@bot.message_handler(regexp=r"^(consultar signos|cs) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$")
-@bot.message_handler(regexp=r"^(consultar signos|cs)$")
+@bot.message_handler(regexp=r"^(consultar signos|cs) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]))$")
 def on_get_signos(message):
     bot.send_chat_action(message.chat.id, 'typing')
-    text = message.chat.first_name
-    signos = GestorConsultas.get_signos(message.from_user.id) 
-    text = "``` Listado de los signos del usuario: " + text + "\n\n"
-    text += f"| Sistolica | Diastolica | F.Cardiaca | Peso |\n"
-    for sv in signos:
-        text += f"| {sv.pas}       | {sv.pad}         | {sv.fc}         | {sv.peso} |\n"
-    text += "```"
-    bot.reply_to(message, text, parse_mode="Markdown")
+    id_usuario = int(message.from_user.id)
+    # Antes de realizar las operaciones se valida que el usuario este registrado
+    if GestorPacientes.existencia_paciente(id_usuario):
+        text = message.chat.first_name
+        parts = re.match(r"^(consultar signos|cs) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]))$", message.text, flags=re.IGNORECASE)
+        fecha_inicial = parts[2]
+        fecha_final = parts[5]
+        signos = GestorConsultas.get_signos(message.from_user.id, fecha_inicial, fecha_final) 
+        # En caso de que el usuario este registrado pero no tenga registros de signos vitales se le mostrara un mensaje
+        if signos is None:
+            bot.reply_to(message, "No existe registro de signos para el usuario " + text + "\n\n", parse_mode="Markdown")
+        else:
+            text = "``` Listado de los signos del usuario: " + text + "\n\n"
+            text += f"| ID | Sistolica | Diastolica | F.Cardiaca | Peso |\n"
+            for sv in signos:
+                text += f"| {sv.id}  | {sv.pas}       | {sv.pad}         | {sv.fc}         | {sv.peso} |\n"
+            text += "```"
+            bot.reply_to(message, text, parse_mode="Markdown")
+    else:
+        bot.send_message (
+            message.chat.id,
+            GestorConversacion.get_validacion_paciente(message.from_user.id,message.from_user.first_name, config.COMPANIA_SIGNOS),parse_mode="Markdown")
 
 @bot.message_handler(regexp=r"^(consultar pacientes|cp)$")
 def on_get_paciente(message):
