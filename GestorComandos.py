@@ -27,7 +27,7 @@ def on_command_start(message):
         GestorConversacion.get_welcome_message(config.ASISTENTE_VIRTUAL,config.COMPANIA_SIGNOS),
         parse_mode="Markdown")
     
-    #Mensaje de bienvenida donde valida si el usuario usa el bot
+    #Mensaje de bienvenida donde valida si el usuario usa el bot y el tipo de perfil (Paciente o médico)
     bot.send_message (
         message.chat.id,
         GestorConversacion.get_validacion_paciente(message.from_user.id,message.from_user.first_name,

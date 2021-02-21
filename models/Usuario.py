@@ -10,10 +10,11 @@ class Usuario(db.Base):
     tipoUsuario = Column('tipoUsuario', Integer, server_default='1')
     nombreCompleto = Column('nombreCompleto', String(500), nullable=False)
 
-    def __init__(self, id_user_tel, documento, nombreCompleto):
+    def __init__(self, id_user_tel, documento, nombreCompleto,tipoUsuario):
         self.id_user_tel = id_user_tel
         self.documento = documento
         self.nombreCompleto = nombreCompleto
+        self.tipoUsuario = tipoUsuario
 
     def __repr__(self):
         return f"<Usuario {self.id_user_tel}>"

@@ -19,6 +19,8 @@ def get_validacion_paciente(user_id_telegram, nombre_user,COMPANIA_SIGNOS):
     usuario = db.session.query(Usuario).get(user_id_telegram)
     db.session.commit()
 
+    print("esto es lo que reponde la BD:",usuario)
+
     if not usuario:
         response = (
             f"*{nombre_user}*, hemos identificado que no estás registrado en el sistema.\n\n"
@@ -27,30 +29,21 @@ def get_validacion_paciente(user_id_telegram, nombre_user,COMPANIA_SIGNOS):
             
             "¡Usa el comando: registrar paciente !"
         )
+    elif usuario.tipoUsuario == 2:      
+        response = (
+            f"*Dr(a). {nombre_user}*, bienvenido y quiero ayudarte con la consulta y registro de observaciones " 
+             f"de tus pacientes. \n\n"
+             "¡Por favor escriba el comando indicado para consultar pacientes o registrar observaciones!"
+        )
     else:
         response = (
              f"*{nombre_user}*, bienvenido y quiero ayudarte con el registro de tus signos vitales. \n\n"
-
               "¡Por favor escriba el comando para registrar o consultar sus datos !"
         )
     return response
 
     
-#########################################################
-# Lógica de registro del ID del usuario de telegram a la base de datos
-'''
-def register_account(user_id):
-    account = db.session.query(Account).get(user_id)
-    db.session.commit()
 
-    if account == None:
-        account = Account(user_id, 0)
-        db.session.add(account)
-        db.session.commit()
-        return True
-
-    return False
-'''
 ##################################################################################################
 # Mensaje del Comando “HELP”  
 def get_help():
