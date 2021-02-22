@@ -190,10 +190,15 @@ def on_get_signos(message):
 def on_get_paciente(message):
     pass
 
-@bot.message_handler(regexp=r"^(listar registros pacientes|lrp)$")
+############################################################################################################
+#Funcino para que los medicos puedan revisar las mediciones de un paciente en un determinado tiempo -sk
+@bot.message_handler(regexp=r"^(listar registros pacientes|lrp) ([0-9]+) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]))$")
 def on_get_resgistro_paciente(message):
-    pass
+    bot.send_chat_action(message.chat.id, 'typing')
 
+    bot.reply_to(message,"te esceché fuerte  y claro sk",parse_mode="Markdown")
+
+#############################################################################################
 @bot.message_handler(regexp=r"^(ingresar observaciones|io)$")
 def on_set_observaciones(message):
     pass
