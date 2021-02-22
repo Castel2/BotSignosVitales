@@ -104,7 +104,7 @@ def on_set_paciente(message):
     usuario = GestorPacientes.get_paciente(documento)
     if usuario == None:
         #Usuario no existente se procede al registro
-        GestorPacientes.set_paciente(message.from_user.id, documento, message.chat.first_name + " " + message.chat.last_name)
+        GestorPacientes.set_paciente(message.from_user.id, documento, message.chat.first_name + " " + message.chat.last_name, 1)
         bot.reply_to(message, f"Paciente registrado.")
     else:
         bot.reply_to(message, f"Paciente ya registrado.")

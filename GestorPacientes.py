@@ -17,8 +17,8 @@ def get_paciente (documento):
         
     return usuario
 
-def set_paciente(id_user_tel, documento, nombreCompleto): 
-    usuario = Usuario(id_user_tel, documento, nombreCompleto)
+def set_paciente(id_user_tel, documento, nombreCompleto, tipo_Usuario): 
+    usuario = Usuario(id_user_tel, documento, nombreCompleto, tipo_Usuario)
     
     db.session.add(usuario)    
     db.session.commit()
