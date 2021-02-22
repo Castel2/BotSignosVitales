@@ -188,7 +188,22 @@ def on_get_signos(message):
 
 @bot.message_handler(regexp=r"^(consultar pacientes|cp)$")
 def on_get_paciente(message):
-    pass
+    medico = GestorConsultas.validar_medico(message.from_user.id)
+    #Si no existe ningun paciente con ese ese documento
+    if not medico:
+        return bot.reply_to(message, f"Esta  consulta solo puede ser realizada por usuarios medicos.", parse_mode="Markdown")
+    else:
+        pacientes = GestorConsultas.get_pacientes()
+        if not pacientes:
+            return bot.reply_to(message, f"No existen pacientes registrados en la base de datos.", parse_mode="Markdown")
+        else:
+            #si pasa las validadciones de imprime los listados
+            text = f"Pacientes registrados en la base de datos:\n\n"
+            text += f"|Documento|Nombre Completo\n"
+            for m in pacientes:
+                text += f"|{m.documento} | {m.nombreCompleto}\n"
+
+            bot.reply_to(message, text, parse_mode="Markdown")
 
 ############################################################################################################
 #Funcino para que los medicos puedan revisar las mediciones de un paciente en un determinado tiempo -sk

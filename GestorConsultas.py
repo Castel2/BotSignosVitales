@@ -12,3 +12,19 @@ def get_signos (user_id, fecha_inicial, fecha_final):
         return None
     return signos
 
+# Lógica bienvenida e inicio al bot
+def validar_medico (id_usuario_chat):
+    usuario = db.session.query(Usuario).filter(Usuario.id_user_tel == id_usuario_chat).filter(Usuario.tipoUsuario == 2).first()
+    db.session.commit()   
+
+    if not usuario:
+        return None
+        
+    return usuario
+
+def get_pacientes ():
+    pacientes = db.session.query(Usuario).filter(Usuario.tipoUsuario == 1).all()
+    db.session.commit()
+    if not pacientes:
+        return None
+    return pacientes    
