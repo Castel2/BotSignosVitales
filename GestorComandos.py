@@ -69,7 +69,7 @@ Fecha y Hora de toma
 def on_set_signos(message):
     bot.send_chat_action(message.chat.id, 'typing')
 
-    parts = re.match(r"^(registrar signos|rs) ([0-9]*) ([0-9]*) ([0-9]*) ([0-9]*[.]?[0-9]*) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))$",message.text)
+    parts = re.match(r"^(registrar signos|rs) ([0-9]*) ([0-9]*) ([0-9]*) ([0-9]*[.]?[0-9]*) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))$",message.text, flags=re.IGNORECASE)
         
     #print(parts[2])
     #print(parts[3])
@@ -97,7 +97,7 @@ def on_set_signos(message):
 def on_set_paciente(message):
     bot.send_chat_action(message.chat.id, 'typing')
 
-    parts = re.match(r"^(registrar paciente|rp) ([0-9]*)$", message.text)        
+    parts = re.match(r"^(registrar paciente|rp) ([0-9]*)$", message.text, flags=re.IGNORECASE)        
 
     documento = int(parts[2])
 
