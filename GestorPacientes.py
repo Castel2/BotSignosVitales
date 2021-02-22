@@ -9,8 +9,8 @@ def get_paciente (documento):
 
     print(documento)
 
-    usuario = db.session.query(Usuario).filter(Usuario.documento == documento).all()
-    db.session.commit()    
+    usuario = db.session.query(Usuario).filter(Usuario.documento == documento).filter(Usuario.tipoUsuario == 1).first()
+    db.session.commit()   
 
     if not usuario:
         return None

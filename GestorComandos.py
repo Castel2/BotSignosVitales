@@ -196,7 +196,45 @@ def on_get_paciente(message):
 def on_get_resgistro_paciente(message):
     bot.send_chat_action(message.chat.id, 'typing')
 
-    bot.reply_to(message,"te esceché fuerte  y claro sk",parse_mode="Markdown")
+    #Se particiona el mensaje recibido
+    parts = re.match(r"^(listar registros pacientes|lrp) ([0-9]+) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]))$", message.text, flags=re.IGNORECASE)
+
+    #Se obtienen las variables 
+    documento = parts [2]
+    fecha_inicial = parts[3]
+    fecha_final = parts[6]
+
+    #validar si tiene permiso para este comando
+    if not GestorMediciones.permiso_medico(message.from_user.id):
+        return bot.reply_to(message, 
+        f"\U0001F6AB Este comando solo puede ser utilizado por un * Médico *" 
+        , parse_mode="Markdown")
+    
+    #obtener id del paciente
+    paciente = GestorPacientes.get_paciente(documento)
+    #Si no existe ningun paciente con ese ese documento
+    if not paciente:
+        return bot.reply_to(message, f"No existe ningun paciente con el número de documento *{documento}*", parse_mode="Markdown")
+
+    #obtener las mediciones del paciente
+    mediciones = GestorConsultas.get_signos(paciente.id_user_tel, fecha_inicial, fecha_final) 
+    #Si no existe ninguna medicion para la fecha
+    if not mediciones:
+        return bot.reply_to(message, f"Desde el día *{fecha_inicial}* hasta el día *{fecha_final}* No existen registros de mediciones para el paciente con cc *{documento}*", parse_mode="Markdown")
+    
+    #si pasa las validadciones de imprime los listados
+    text = f"``` Listado de las mediciones del Paciente: \n {documento} {paciente.nombreCompleto} \n"
+    text += f" Desde {fecha_inicial} hasta {fecha_final} \n\n"
+    text += f"|ID|Sistolica|Diastolica|F.Cardiaca|Peso|Fecha Toma| \n"
+    for m in mediciones:
+        fecha_corta = str(m.fecha_toma)[0:10]
+        text += f"|{m.id} | {m.pas}      | {m.pad}       | {m.fc}       |{m.peso}| {fecha_corta} |\n"
+    text += "```"
+    bot.reply_to(message, text, parse_mode="Markdown")
+    
+    
+    
+    #print(f"documento: {documento} fi: {fecha_inicial} ff: {fecha_final}")
 
 #############################################################################################
 @bot.message_handler(regexp=r"^(ingresar observaciones|io)$")

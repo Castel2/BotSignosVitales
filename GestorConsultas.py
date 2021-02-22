@@ -11,3 +11,4 @@ def get_signos (user_id, fecha_inicial, fecha_final):
     if not signos:
         return None
     return signos
+
