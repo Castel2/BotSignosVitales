@@ -110,7 +110,7 @@ def on_set_paciente(message):
         bot.reply_to(message, f"Paciente ya registrado.")
 
 #########################################################
-# Comando para eliminar los signos vitales 
+# Comando para eliminar los signos vitales - SK
   
 @bot.message_handler(regexp=r"^(eliminar signos|es) ([0-9]+)$")
 def on_delete_signos(message):
@@ -120,9 +120,9 @@ def on_delete_signos(message):
     #se guarda el id del usuario y id de la medicion
     id_usuario = int(message.from_user.id)
     id_medicion = int(parts[2])
-
+    
     #Se llama la funcion que consulta en la base de datos las mediciones. 
-    signo_borrar = GestorMediciones.eliminar_signos_consulta(id_usuario,id_medicion)
+    signo_borrar = GestorConsultas.consulta_signos(id_usuario,id_medicion)
     
     #Si el paciente no está registrado
     if not GestorPacientes.existencia_paciente(id_usuario):
@@ -191,7 +191,7 @@ def on_get_paciente(message):
     medico = GestorConsultas.validar_medico(message.from_user.id)
     #Si no existe ningun paciente con ese ese documento
     if not medico:
-        return bot.reply_to(message, f"Esta  consulta solo puede ser realizada por usuarios medicos.", parse_mode="Markdown")
+        return bot.reply_to(message, f"\U0001F6AB Esta consulta solo puede ser realizada por usuarios medicos.", parse_mode="Markdown")
     else:
         pacientes = GestorConsultas.get_pacientes()
         if not pacientes:
@@ -220,7 +220,7 @@ def on_get_resgistro_paciente(message):
     fecha_final = parts[6]
 
     #validar si tiene permiso para este comando
-    if not GestorMediciones.permiso_medico(message.from_user.id):
+    if not GestorConsultas.validar_medico(message.from_user.id):
         return bot.reply_to(message, 
         f"\U0001F6AB Este comando solo puede ser utilizado por un * Médico *" 
         , parse_mode="Markdown")
@@ -252,9 +252,55 @@ def on_get_resgistro_paciente(message):
     #print(f"documento: {documento} fi: {fecha_inicial} ff: {fecha_final}")
 
 #############################################################################################
-@bot.message_handler(regexp=r"^(ingresar observaciones|io)$")
+@bot.message_handler(regexp=r"^(ingresar observaciones|io) ([0-9]+) (\s*[a-zA-Z,\s]+\s*)$")
 def on_set_observaciones(message):
-    pass
+    #se particiona el mensaje
+    parts = re.match(r"^(ingresar observaciones|io) ([0-9]+) (\s*[a-zA-Z,\s]+\s*)$", message.text, flags=re.IGNORECASE)
+    #se guarda el id de la medicion
+    #id_medicion = int(parts[2])
+    
+    bot.reply_to(message, "te escuho fuerte y claro")
+
+    contador=1
+    for i in parts.groups():
+        print(contador,": ",i)
+        contador += 1
+
+
+    '''
+    #validar si es Medico
+    if not GestorConsultas.validar_medico(id_medicion):
+        return bot.reply_to(message, f"\U0001F6AB Este comando solo puede ser utilizado por un * Médico *"
+        ,parse_mode="Markdown")
+
+    #Obtener la medicion que se le añadira la observacion 
+    medicion = GestorConsultas.consulta_medicion(id_medicion)
+
+    #si no existe ninguna medicion con id_medicion
+    if not medicion:
+        return bot.reply_to(message, 
+        f"\U0001F928 No exite ninguna medicion con el codigo: {id_medicion}\n\n" 
+        f"Verifica e intenta nuevamente, puedes usar el comando:\n\n"
+        "*listar registros pacientes|lrp {Fecha inicial (dd-mm-aaaa)} {Fecha Final (dd-mm-aaaa)}* - para consultar sus signos registrados", parse_mode="Markdown")
+
+  
+    #Mostar Signo a Eliminar y solicitar confimacion de eliminacion
+    bot.send_message(message.chat.id,
+    GestorConversacion.get_signo_eliminar (
+    message.chat.first_name + " " + message.chat.last_name, 
+    signo_borrar.id,
+    signo_borrar.pas, 
+    signo_borrar.pad, 
+    signo_borrar.fc, 
+    signo_borrar.peso, 
+    signo_borrar.fecha_toma,
+    signo_borrar.fecha_registro),
+    parse_mode="Markdown")
+
+    #Recibir confirmacion de elminiacion y ejecutar la acción
+    bot.register_next_step_handler(message, GestorMediciones.eliminar_signos, signo_borrar.id)
+
+    '''
 #############################################################################################
 # Mensaje por defecto que procesa los demás mensajes que coincidan 
 # con los comandos ingresados por el usuario

@@ -3,6 +3,7 @@ from datetime import datetime
 from sqlalchemy import *
 from models.Usuario import Usuario
 from models.Medicion import Medicion
+from models.Observacion import Observacion
 
 def get_signos (user_id, fecha_inicial, fecha_final):
     fecha_final = fecha_final + " 23:59:59.999999"
@@ -28,3 +29,42 @@ def get_pacientes ():
     if not pacientes:
         return None
     return pacientes    
+
+
+# consultar signos”  PARA CONSULTAR  -SK
+def consulta_signos(user_id, index):
+    #se guarda la consulta en la variable signo
+    signo = db.session.query(Medicion).filter(
+    Medicion.id_user_tel == user_id
+    ).filter(
+    Medicion.id == index
+    ).first()
+    #si no hay nada en signos
+    if not signo:
+        db.session.rollback()
+        return None
+    #Si hay un registro en signos
+    return signo
+
+def consulta_medicion(index):
+    #se guarda la consulta en la variable signo
+    signo = db.session.query(Medicion).filter(
+    Medicion.id == index).first()
+    #si no hay nada en signos
+    if not signo:
+        db.session.rollback()
+        return None
+    #Si hay un registro en signos
+    return signo
+'''
+# consultar los observaciones”  PARA CONSULTAR  -SK
+def consulta_observaciones(index):
+    #se guarda la consulta en la variable obsercion
+    observacion = db.session.query(Observacion).filter( Observacion.id == index).first()
+    #si no hay nada en Observacion
+    if not observacion:
+        db.session.rollback()
+        return None
+    #Si hay un registro en Observacion
+    return observacion
+    '''
