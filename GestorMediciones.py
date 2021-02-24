@@ -31,7 +31,7 @@ def step_2_registro_signos(message, pas, pad, fc, peso, fecha_toma):
 
 ##################################################################################################
 # La confirmación de la eliminación de la medición.-SK
-def eliminar_signos(message, index):
+def step_2_eliminar_signos(message, index):
     signo = db.session.query(Medicion).get(index)
 
     print(signo.id)

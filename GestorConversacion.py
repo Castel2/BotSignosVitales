@@ -50,15 +50,23 @@ def get_help():
     response = (
         "Estos son los comandos disponibles:\n"
         "\n"
-        "*/start* - Inicio de la interacción con el bot\n\n"
-        "*/help* - Muestra este mensaje de ayuda\n\n"
-        "*/about* - Muestra detalles de esta aplicación y su equipo de desarrollo\n\n"
-        "*registrar paciente|rp {documento} {nombre completo}* - para registro de paciente\n\n"
-        "*registrar signos|rs {Presión arterial sistólica} {presión arterial diastólica} {frecuencia cardiaca, peso (kg)} {fecha (dd-mm-aaaa)} {hora (hh--mm AM/PM)}* - Para registro de signos vitales\n\n"
-        "*consultar signos|cs {Fecha inicial (dd-mm-aaaa)} {Fecha Final (dd-mm-aaaa)}* - para consultar sus signos registrados\n\n"
-        "*eliminar signos|es {número de la medición}* - eliminar medición, se recomienda consultar la medición para conocer su númeración\n\n"
-        "*consultar pacientes|cp {documento} {Fecha inicial (dd-mm-aaaa)} {Fecha Final (dd-mm-aaaa)}* - para realizar esta consulta debe estar habilitado como medico en nuestro sistema, permite consultar datos de pacientes \n\n"
-        "*ingresar observaciones|io {número de la medición} {observación asociada}* - permite a asociar una observación a una medición registrada por un paciente, funcionalidad solo disponible para medicos autorizados\n\n"
+        "*/start* - Inicio de la interacción con el bot\n"
+        "*/help* - Muestra este mensaje de ayuda\n"
+        "*/about* - Muestra detalles de esta aplicación y su equipo de desarrollo\n"
+        "---------------------------------------------------------------\n\n"
+
+        "*PACIENTES* \U0001F637\U0001F912\U0001F915\n\n"
+        "*registrar paciente|rp {documento}* - para registro de paciente\n\n"
+        "*registrar signos|rs {Presión arterial sistólica} {presión arterial diastólica} {frecuencia cardiaca} {peso (kg)} {fecha toma (aaaa-mm-dd)} {hora toma 24h (hh:mm:ss)}* - Para registro de signos vitales\n\n"
+        "*consultar signos|cs {Fecha inicial (aaaa-mm-dd)} {Fecha Final (aaaa-mm-dd)}* - para consultar sus signos registrados\n\n"
+        "*eliminar signos|es {número de la medición}* - eliminar medición, se recomienda consultar la medición para conocer su númeración\n"
+        "---------------------------------------------------------------\n\n"
+        
+        "*MEDICOS \U0001FA7A \U0001F3E5 \U0001F691 \U0001F52C*\n\n"
+        "*consultar pacientes|cp* - para realizar esta consulta debe estar habilitado como medico en nuestro sistema, permite visualizar el número de documento y el nombre de los pacientes registrados en núestro sistema \n\n"
+        "*listar registros pacientes|lrp {documento} {Fecha inicial (aaaa-mm-dd)} {Fecha Final (aaaa-mm-dd)}* - para realizar esta consulta debe estar habilitado como medico en nuestro sistema, permite consultar datos de pacientes \n\n"
+        "*ingresar observaciones|io {número de la medición} {observación asociada}* - permite a asociar una observación a una medición registrada por un paciente, funcionalidad solo disponible para medicos autorizados\n"
+        "---------------------------------------------------------------\n"
         )
 
     return response
@@ -124,3 +132,14 @@ def get_signo_eliminar (nombrePaciente, id_medicion, pas, pad, fc, peso, fecha_t
         )
    
     return response
+
+def get_observacion (id_medicion, observacion):
+    response = (
+        f"\U0001F4C3 La observacion para la medicion con *id {id_medicion}*:\n\n"
+        f"\U0000203C *{observacion}* \U0000203C\n\n"
+        f"¿Desea añadir esta observacion?\n\n"
+        f"*1.* Guardar\n"
+        f"*2.* Cancelar\n"
+        )
+    return response
+
