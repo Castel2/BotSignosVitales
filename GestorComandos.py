@@ -191,7 +191,7 @@ def on_get_paciente(message):
     medico = GestorConsultas.validar_medico(message.from_user.id)
     #Si no existe ningun paciente con ese ese documento
     if not medico:
-        return bot.reply_to(message, f"\U0001F6AB Esta consulta solo puede ser realizada por usuarios medicos.", parse_mode="Markdown")
+        return bot.reply_to(message, f"\U0001F6AB Esta consulta solo puede ser realizada por usuarios médicos.", parse_mode="Markdown")
     else:
         pacientes = GestorConsultas.get_pacientes()
         if not pacientes:
@@ -272,9 +272,9 @@ def on_set_observaciones(message):
     #si no existe ninguna medicion con id_medicion
     if not medicion:
         return bot.reply_to(message, 
-        f"\U0001F928 No exite ninguna medicion con el codigo: {id_medicion}\n\n" 
+        f"\U0001F928 No exite ninguna medición con el código: {id_medicion}\n\n" 
         f"Verifica e intenta nuevamente, puedes usar el comando:\n\n"
-        "*listar registros pacientes|lrp {documento paciente} {Fecha inicial (aaaa-mm-dd)} {Fecha Final (aaaa-mm-dd)}* - para consultar la medicion de los pacientes", parse_mode="Markdown")
+        "*listar registros pacientes|lrp {documento paciente} {Fecha inicial (aaaa-mm-dd)} {Fecha Final (aaaa-mm-dd)}* - para consultar la medición de los pacientes", parse_mode="Markdown")
 
     #Mostar Observacion a añedir y solicitar confimacion de guardar
     bot.send_message(message.chat.id,

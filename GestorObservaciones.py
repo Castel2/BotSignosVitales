@@ -15,7 +15,7 @@ def step_2_Registrar_observacion(message, idMedicion, id_user_tel, observacion):
         db.session.add(observacion)
         db.session.commit()
 
-        bot.send_message(message.chat.id,"*Observación añadida con exito.*",parse_mode="Markdown")
+        bot.send_message(message.chat.id,"*Observación añadida con éxito.*",parse_mode="Markdown")
     elif message.text == "2":
         bot.reply_to(message, f"Proceso cancelado por el usuario.")
     else:

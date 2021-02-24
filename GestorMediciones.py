@@ -41,7 +41,7 @@ def step_2_eliminar_signos(message, index):
         db.session.delete(signo)
         db.session.commit()
 
-        bot.send_message(message.chat.id,"*Registro eliminado con exito.*",parse_mode="Markdown")
+        bot.send_message(message.chat.id,"*Registro eliminado con éxito.*",parse_mode="Markdown")
     elif message.text == "2":
         bot.reply_to(message, f"Proceso cancelado por el usuario.")
     else:
