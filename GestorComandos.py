@@ -176,9 +176,9 @@ def on_get_signos(message):
             bot.reply_to(message, "No existe registro de signos para el usuario " + text + "\n\n", parse_mode="Markdown")
         else:
             text = "``` Listado de los signos del usuario: " + text + "\n\n"
-            text += f"| ID | Sistolica | Diastolica | F.Cardiaca | Peso |\n"
+            text += f"|ID|Sistolica|Diastolica|F.Cardiaca|Peso|Observación| \n"
             for sv in signos:
-                text += f"| {sv.id}  | {sv.pas}       | {sv.pad}         | {sv.fc}         | {sv.peso} |\n"
+                text += f"| {sv.id}|   {sv.pas}   |   {sv.pad}     | {sv.fc}   | {sv.peso} |{sv.observacion}| \n"
             text += "```"
             bot.reply_to(message, text, parse_mode="Markdown")
     else:
