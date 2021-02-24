@@ -8,7 +8,7 @@ from models.Observacion import Observacion
 # Consulta para obtener los signos de una persona
 def get_signos (user_id, fecha_inicial, fecha_final):
     fecha_final = fecha_final + " 23:59:59.999999"
-    signos = db.session.query(Medicion.id, Medicion.pas, Medicion.pad, Medicion.fc, Medicion.peso, Observacion.observacion).outerjoin(Observacion, Observacion.idMedicion == Medicion.id).filter(Medicion.id_user_tel == user_id).filter(and_(Medicion.fecha_toma >= fecha_inicial, Medicion.fecha_toma <= fecha_final)).all()
+    signos = db.session.query(Medicion.id, Medicion.pas, Medicion.pad, Medicion.fc, Medicion.peso, Medicion.fecha_toma, Observacion.observacion).outerjoin(Observacion, Observacion.idMedicion == Medicion.id).filter(Medicion.id_user_tel == user_id).filter(and_(Medicion.fecha_toma >= fecha_inicial, Medicion.fecha_toma <= fecha_final)).all()
     db.session.commit()
     if not signos:
         return None
@@ -57,15 +57,3 @@ def consulta_medicion(index):
         return None
     #Si hay un registro en signos
     return signo
-'''
-# consultar los observaciones”  PARA CONSULTAR  -SK
-def consulta_observaciones(index):
-    #se guarda la consulta en la variable obsercion
-    observacion = db.session.query(Observacion).filter( Observacion.id == index).first()
-    #si no hay nada en Observacion
-    if not observacion:
-        db.session.rollback()
-        return None
-    #Si hay un registro en Observacion
-    return observacion
-    '''

@@ -242,7 +242,7 @@ def on_get_resgistro_paciente(message):
     text += f" Desde {fecha_inicial} hasta {fecha_final} \n\n"
     text += f"|ID|Sistolica|Diastolica|F.Cardiaca|Peso|Fecha Toma| \n"
     for m in mediciones:
-        fecha_corta = str(m.fecha_toma)[0:10]
+        fecha_corta = str(m.fecha_toma)[5:10] + str(m.fecha_toma)[10:16]
         text += f"|{m.id} | {m.pas}      | {m.pad}       | {m.fc}       |{m.peso}| {fecha_corta} |\n"
     text += "```"
     bot.reply_to(message, text, parse_mode="Markdown")
