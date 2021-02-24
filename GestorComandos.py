@@ -65,17 +65,45 @@ Frecuencia cardiaca
 Peso
 Fecha y Hora de toma
 '''
+
+################################################
+#C O M A N D O S   P A R A   P A C I E N T E S #
+################################################
+
+#REGISTRAR PACIENTE(RP)########################################################
+# Comando para registrar pacientes donde solo debe colocar el número de identificación sin comas y puntos
+@bot.message_handler(regexp=r"^(registrar paciente|rp) ([0-9]*)$")
+def on_set_paciente(message):
+    bot.send_chat_action(message.chat.id, 'typing')
+
+    parts = re.match(r"^(registrar paciente|rp) ([0-9]*)$", message.text, flags=re.IGNORECASE)        
+
+    #Si es un Medico
+    if GestorConsultas.validar_medico(message.from_user.id):
+        return bot.reply_to(message, f"\U0001FA7A *Dr(a). {message.from_user.first_name}*, no puede implementar este comando, solo lo pueden usarlo pacientes.", parse_mode="Markdown")
+    
+    documento = int(parts[2])
+    #si existe paciente
+    paciente = GestorPacientes.get_paciente(documento)
+    if paciente:
+        return bot.reply_to(message, f"Paciente ya registrado.",parse_mode="Markdown")
+    
+    #si usuario ya registrado
+    usuario = GestorConsultas.existencia_usuario(message.from_user.id)
+    if usuario:
+        return bot.reply_to(message, f"Este usuario ya está registrado con el documento *{usuario.documento}*", parse_mode="Markdown")
+    
+    #Usuario no existente se procede al registro
+    GestorPacientes.set_paciente(message.from_user.id, documento, message.chat.first_name + " " + message.chat.last_name, 1)
+    return bot.reply_to(message, f"Paciente registrado.")
+
+
+#REGISTRAR SIGNOS(RS)####################################################################################
 @bot.message_handler(regexp=r"^(registrar signos|rs) ([0-9]*) ([0-9]*) ([0-9]*) ([0-9]*[.]?[0-9]*) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))$")
 def on_set_signos(message):
     bot.send_chat_action(message.chat.id, 'typing')
 
     parts = re.match(r"^(registrar signos|rs) ([0-9]*) ([0-9]*) ([0-9]*) ([0-9]*[.]?[0-9]*) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))$",message.text, flags=re.IGNORECASE)
-        
-    #print(parts[2])
-    #print(parts[3])
-    #print(parts[4])
-    #print(parts[5])
-    #print(parts[6])
 
     pas = int(parts[2])
     pad = int(parts[3])
@@ -83,33 +111,29 @@ def on_set_signos(message):
     peso = float(parts[5])
     fecha_toma = parts[6]
 
+    id_usuario = message.from_user.id
+
+    #Si el usuario no está registrado
+    if not GestorConsultas.existencia_usuario(id_usuario):
+        bot.reply_to(message, f"\U0001F614 *{message.from_user.first_name}*, no puedes implementar este comando, ya que no esta registrado.", parse_mode="Markdown")
+
+        return bot.send_message (
+        message.chat.id,
+        GestorConversacion.get_validacion_paciente(id_usuario,message.from_user.first_name, config.COMPANIA_SIGNOS),
+        parse_mode="Markdown")
+     
+    #Si es un Medico
+    if GestorConsultas.validar_medico(id_usuario):
+        return bot.reply_to(message, f"\U0001FA7A *Dr(a). {message.from_user.first_name}*, no puede implementar este comando, solo lo pueden usarlo pacientes.", parse_mode="Markdown")
+
+    #Pasa todas las validaciones pruebas
     bot.send_message(
-            message.chat.id,
-            GestorConversacion.get_registro_signos(message.chat.first_name + " " + message.chat.last_name, pas, pad, fc, peso, fecha_toma),
-            parse_mode="Markdown")
+        message.chat.id,GestorConversacion.get_registro_signos(message.chat.first_name + " " + message.chat.last_name, pas, pad, fc, peso, fecha_toma),parse_mode="Markdown")
 
     bot.register_next_step_handler(message, GestorMediciones.step_2_registro_signos, pas, pad, fc, peso, fecha_toma)
 
-#########################################################
-# Comando para registrar pacientes donde solo debe colocar el número de identificación sin comas y puntos
 
-@bot.message_handler(regexp=r"^(registrar paciente|rp) ([0-9]*)$")
-def on_set_paciente(message):
-    bot.send_chat_action(message.chat.id, 'typing')
-
-    parts = re.match(r"^(registrar paciente|rp) ([0-9]*)$", message.text, flags=re.IGNORECASE)        
-
-    documento = int(parts[2])
-
-    usuario = GestorPacientes.get_paciente(documento)
-    if usuario == None:
-        #Usuario no existente se procede al registro
-        GestorPacientes.set_paciente(message.from_user.id, documento, message.chat.first_name + " " + message.chat.last_name, 1)
-        bot.reply_to(message, f"Paciente registrado.")
-    else:
-        bot.reply_to(message, f"Paciente ya registrado.")
-
-#########################################################
+#ELIMINAR SIGNOS (ES)########################################################
 # Comando para eliminar los signos vitales - SK
   
 @bot.message_handler(regexp=r"^(eliminar signos|es) ([0-9]+)$")
@@ -124,21 +148,32 @@ def on_delete_signos(message):
     #Se llama la funcion que consulta en la base de datos las mediciones. 
     signo_borrar = GestorConsultas.consulta_signos(id_usuario,id_medicion)
     
-    #Si el paciente no está registrado
-    if not GestorPacientes.existencia_paciente(id_usuario):
+    #Si el usuario no está registrado
+    if not GestorConsultas.existencia_usuario(id_usuario):
         bot.reply_to(message, f"\U0001F614 *{message.from_user.first_name}*, no puedes implementar este comando, ya que no esta registrado.", parse_mode="Markdown")
 
         return bot.send_message (
         message.chat.id,
-        GestorConversacion.get_validacion_paciente(message.from_user.id,message.from_user.first_name, config.COMPANIA_SIGNOS),
-        parse_mode="Markdown")  
-    
+        GestorConversacion.get_validacion_paciente(id_usuario,message.from_user.first_name, config.COMPANIA_SIGNOS),
+        parse_mode="Markdown")
+     
+    #Si es un Medico
+    if GestorConsultas.validar_medico(id_usuario):
+        return bot.reply_to(message, f"\U0001FA7A *Dr(a). {message.from_user.first_name}*, no puede implementar este comando, solo lo pueden usarlo pacientes.", parse_mode="Markdown")  
+
+    #si no tiene signos
     if not signo_borrar:
         return bot.reply_to(message, 
         f"\U0001F928 *{message.from_user.first_name}*, "
         f"No has regitrado signos con el id: {id_medicion}\n\n" "Verifica e intenta nuevamente, puedes usar el comando:\n\n"
         "*consultar signos|cs {Fecha inicial (dd-mm-aaaa)} {Fecha Final (dd-mm-aaaa)}* - para consultar sus signos registrados"
-        ,parse_mode="Markdown")    
+        ,parse_mode="Markdown")   
+
+    #si el signo ya tiene una observacion
+    observacion = GestorConsultas.get_signo_observacion(id_medicion)
+    if observacion:
+        return bot.reply_to(message, 
+        f"\U0001F6AB No puedes eliminar esta medición porque tiene una observación: *\U0000203C {observacion.observacion} \U0000203C*",parse_mode="Markdown")  
     
     #Mostar Signo a Eliminar y solicitar confimacion de eliminacion
     bot.send_message(message.chat.id,
@@ -155,57 +190,54 @@ def on_delete_signos(message):
 
     #Recibir confirmacion de elminiacion y ejecutar la acción
     bot.register_next_step_handler(message, GestorMediciones.step_2_eliminar_signos, signo_borrar.id)
- 
 
-#########################################################
+
+#CONSULTAR SIGNOS (CS) ########################################################
 # Comando para comnsultar mis signos vitales, recibe dos fechas como parametros inicial y final respectivamente en formato yyyy-mm-dd
-      
 @bot.message_handler(regexp=r"^(consultar signos|cs) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]))$")
 def on_get_signos(message):
     bot.send_chat_action(message.chat.id, 'typing')
+    parts = re.match(r"^(consultar signos|cs) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]))$", message.text, flags=re.IGNORECASE)
+    fecha_inicial = parts[2]
+    fecha_final = parts[5]
+  
     id_usuario = int(message.from_user.id)
-    # Antes de realizar las operaciones se valida que el usuario este registrado
-    if GestorPacientes.existencia_paciente(id_usuario):
-        text = message.chat.first_name
-        parts = re.match(r"^(consultar signos|cs) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]))$", message.text, flags=re.IGNORECASE)
-        fecha_inicial = parts[2]
-        fecha_final = parts[5]
-        signos = GestorConsultas.get_signos(message.from_user.id, fecha_inicial, fecha_final) 
-        # En caso de que el usuario este registrado pero no tenga registros de signos vitales se le mostrara un mensaje
-        if signos is None:
-            bot.reply_to(message, "No existe registro de signos para el usuario " + text + "\n\n", parse_mode="Markdown")
-        else:
-            text = "``` Listado de los signos del usuario: " + text + "\n\n"
-            text += f"|ID|Sistolica|Diastolica|F.Cardiaca|Peso|Observación| \n"
-            for sv in signos:
-                text += f"| {sv.id}|   {sv.pas}   |   {sv.pad}     | {sv.fc}   | {sv.peso} |{sv.observacion}| \n"
-            text += "```"
-            bot.reply_to(message, text, parse_mode="Markdown")
-    else:
-        bot.send_message (
-            message.chat.id,
-            GestorConversacion.get_validacion_paciente(message.from_user.id,message.from_user.first_name, config.COMPANIA_SIGNOS),parse_mode="Markdown")
+    nombre_user = message.chat.first_name
+    
+    #Si el usuario no está registrado
+    if not GestorConsultas.existencia_usuario(id_usuario):
+        bot.reply_to(message, f"\U0001F614 *{message.from_user.first_name}*, no puedes implementar este comando, ya que no esta registrado.", parse_mode="Markdown")
 
-@bot.message_handler(regexp=r"^(consultar pacientes|cp)$")
-def on_get_paciente(message):
-    medico = GestorConsultas.validar_medico(message.from_user.id)
-    #Si no existe ningun paciente con ese ese documento
-    if not medico:
-        return bot.reply_to(message, f"\U0001F6AB Esta consulta solo puede ser realizada por usuarios médicos.", parse_mode="Markdown")
-    else:
-        pacientes = GestorConsultas.get_pacientes()
-        if not pacientes:
-            return bot.reply_to(message, f"No existen pacientes registrados en la base de datos.", parse_mode="Markdown")
-        else:
-            #si pasa las validadciones de imprime los listados
-            text = f"Pacientes registrados en la base de datos:\n\n"
-            text += f"|Documento|Nombre Completo\n"
-            for m in pacientes:
-                text += f"|{m.documento} | {m.nombreCompleto}\n"
+        return bot.send_message (
+        message.chat.id,
+        GestorConversacion.get_validacion_paciente(id_usuario,message.from_user.first_name, config.COMPANIA_SIGNOS),
+        parse_mode="Markdown")
+     
+    #Si es un Medico
+    if GestorConsultas.validar_medico(id_usuario):
+        return bot.reply_to(message, f"\U0001FA7A *Dr(a). {message.from_user.first_name}*, no puede implementar este comando, solo lo pueden usarlo pacientes.", parse_mode="Markdown")
 
-            bot.reply_to(message, text, parse_mode="Markdown")
+    signos = GestorConsultas.get_signos(message.from_user.id, fecha_inicial, fecha_final) 
+    # En caso de que el usuario este registrado pero no tenga registros de signos vitales se le mostrara un mensaje
+    if not signos:
+        return bot.reply_to(message, "No existe registro de signos para el usuario " + nombre_user + "\n\n", parse_mode="Markdown")
 
-############################################################################################################
+    #si pasa todas las validaciones
+    text = "``` Listado de los signos del usuario: " + nombre_user + "\n"
+    text += f" Desde {fecha_inicial} hasta {fecha_final} \n"
+    text += f"|ID|Sistolica|Diastolica|F.Cardiaca|Peso|Observación| \n"
+    for sv in signos:
+        text += f"| {sv.id}|   {sv.pas}   |   {sv.pad}     | {sv.fc}   | {sv.peso} |{sv.observacion}| \n"
+    text += "```"
+    return bot.reply_to(message, text, parse_mode="Markdown")
+###############################################################################################################
+###############################################################################################################
+
+############################################
+#C O M A N D O S   P A R A   M E D I C O S #
+############################################
+
+#LISTAR REGISTROS PACIENTES (LRP)################################################################################
 #Funcino para que los medicos puedan revisar las mediciones de un paciente en un determinado tiempo -sk
 @bot.message_handler(regexp=r"^(listar registros pacientes|lrp) ([0-9]+) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])) ([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]))$")
 def on_get_resgistro_paciente(message):
@@ -227,6 +259,7 @@ def on_get_resgistro_paciente(message):
     
     #obtener id del paciente
     paciente = GestorPacientes.get_paciente(documento)
+
     #Si no existe ningun paciente con ese ese documento
     if not paciente:
         return bot.reply_to(message, f"No existe ningun paciente con el número de documento *{documento}*", parse_mode="Markdown")
@@ -242,25 +275,24 @@ def on_get_resgistro_paciente(message):
     text += f" Desde {fecha_inicial} hasta {fecha_final} \n\n"
     text += f"|ID|Sistolica|Diastolica|F.Cardiaca|Peso|Fecha Toma| \n"
     for m in mediciones:
-        fecha_corta = str(m.fecha_toma)[5:10] + str(m.fecha_toma)[10:16]
+        fecha_corta = str(m.fecha_toma)[2:10] + str(m.fecha_toma)[10:16]
         text += f"|{m.id} | {m.pas}      | {m.pad}       | {m.fc}       |{m.peso}| {fecha_corta} |\n"
     text += "```"
     bot.reply_to(message, text, parse_mode="Markdown")
     
-    
-    
-    #print(f"documento: {documento} fi: {fecha_inicial} ff: {fecha_final}")
 
-#############################################################################################
-@bot.message_handler(regexp=r"^(ingresar observaciones|io) ([0-9]+) ([A-Za-z_ÑñÁáÉéÍíÓóÚú,;.:!'´ ]+)$")
+#INGRESAR OBSERVACION(IO)###########################################################################################-sk
+#Le perimite a medicos añadir una observacion a una medicion ###################################################
+@bot.message_handler(regexp=r"^(ingresar observaciones|io) ([0-9]+) ([A-Za-z_ÑñÁáÉéÍíÓóÚú,;.:¡!¿?'´*%()0123456789 ]+)$")
 def on_set_observaciones(message):
     #se particiona el mensaje
-    parts = re.match(r"^(ingresar observaciones|io) ([0-9]+) ([A-Za-z_ÑñÁáÉéÍíÓóÚú,;.:!'´ ]+)$", message.text, flags=re.IGNORECASE)
+    parts = re.match(r"^(ingresar observaciones|io) ([0-9]+) ([A-Za-z_ÑñÁáÉéÍíÓóÚú,;.:¡!¿?'´*%()0123456789 ]+)$", message.text, flags=re.IGNORECASE)
     #se guarda el id de la medicion
     id_medicion = int(parts[2])
     observacion = str(parts[3])
+
     id_usuario_medico = message.from_user.id
-    
+
     #validar si es Medico
     if not GestorConsultas.validar_medico(id_usuario_medico):
         return bot.reply_to(message, f"\U0001F6AB Este comando solo puede ser utilizado por un * Médico *"
@@ -284,6 +316,33 @@ def on_set_observaciones(message):
     #Recibir confirmacion de elminiacion y ejecutar la acción
     bot.register_next_step_handler(message, GestorObservaciones.step_2_Registrar_observacion, id_medicion, id_usuario_medico, observacion)
 
+#CONSULTAR PACIENTE (CP)####################################################################################
+#Le permite a los medicos visualizar los documentos y nombre de los pacientes
+@bot.message_handler(regexp=r"^(consultar pacientes|cp)$")
+def on_get_paciente(message):
+    
+    #validar si tiene permiso para este comando
+    if not GestorConsultas.validar_medico(message.from_user.id):
+        return bot.reply_to(message, 
+        f"\U0001F6AB Este comando solo puede ser utilizado por un * Médico *" 
+        , parse_mode="Markdown")
+
+    #Si no existe ningun paciente
+    pacientes = GestorConsultas.get_pacientes()
+    if not pacientes:
+        return bot.reply_to(message, f"No existen pacientes registrados en la base de datos.", parse_mode="Markdown")
+     
+    #si pasa las validadciones de imprime los listados
+    text = f"Pacientes registrados en la base de datos:\n\n"
+    text += f"|Documento|Nombre Completo\n"
+    for m in pacientes:
+        text += f"|{m.documento} | {m.nombreCompleto}\n"
+
+    return bot.reply_to(message, text, parse_mode="Markdown")
+
+###############################################################################################################
+###############################################################################################################
+
 
 #############################################################################################
 # Mensaje por defecto que procesa los demás mensajes que coincidan 
@@ -298,8 +357,6 @@ def on_fallback(message):
     bot.reply_to(message, response, parse_mode="Markdown")
 
 #########################################################
-
 if __name__ == '__main__':
     bot.polling(timeout=1)
 #########################################################
-

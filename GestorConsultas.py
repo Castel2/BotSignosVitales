@@ -24,13 +24,15 @@ def validar_medico (id_usuario_chat):
         
     return usuario
 
-def get_pacientes ():
-    pacientes = db.session.query(Usuario).filter(Usuario.tipoUsuario == 1).all()
-    db.session.commit()
-    if not pacientes:
-        return None
-    return pacientes    
+def existencia_usuario (id_usuario):
 
+    usuario = db.session.query(Usuario).filter(Usuario.id_user_tel == id_usuario).first()
+    db.session.commit()   
+
+    if not usuario:
+        return None
+        
+    return usuario
 
 # consultar signos”  PARA CONSULTAR  -SK
 def consulta_signos(user_id, index):
@@ -56,4 +58,18 @@ def consulta_medicion(index):
         db.session.rollback()
         return None
     #Si hay un registro en signos
+    return signo
+
+def get_pacientes ():
+    pacientes = db.session.query(Usuario).filter(Usuario.tipoUsuario == 1).all()
+    db.session.commit()
+    if not pacientes:
+        return None
+    return pacientes    
+
+def get_signo_observacion (id_medicion):
+    signo = db.session.query(Observacion).filter(Observacion.idMedicion== id_medicion).first()
+    db.session.commit()
+    if not signo:
+        return None
     return signo
