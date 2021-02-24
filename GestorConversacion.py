@@ -142,4 +142,5 @@ def get_observacion (id_medicion, observacion):
         f"*2.* Cancelar\n"
         )
     return response
+
     
