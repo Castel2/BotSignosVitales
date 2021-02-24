@@ -15,6 +15,24 @@ if __name__ == '__main__':
     db.Base.metadata.create_all(db.engine)
 #########################################################
 
+#Funcion recurente
+#########################################################
+def check_user(message, id_usuario):
+    #Si el usuario no está registrado
+    if not GestorConsultas.existencia_usuario(id_usuario):
+        bot.reply_to(message, f"\U0001F614 *{message.from_user.first_name}*, no puedes implementar este comando, ya que no esta registrado.", parse_mode="Markdown")
+        bot.send_message (
+        message.chat.id,
+        GestorConversacion.get_validacion_paciente(id_usuario,message.from_user.first_name, config.COMPANIA_SIGNOS),
+        parse_mode="Markdown")
+        return False
+    #Si es un Medico
+    if GestorConsultas.validar_medico(id_usuario):
+        bot.reply_to(message, f"\U0001FA7A *Dr(a). {message.from_user.first_name}*, no puede implementar este comando, solo lo pueden usarlo pacientes.", parse_mode="Markdown")
+        return False
+    return True
+#########################################################
+
 # Comando de Inicio del bot
 @bot.message_handler(commands=['start'])
 def on_command_start(message):
@@ -113,24 +131,11 @@ def on_set_signos(message):
 
     id_usuario = message.from_user.id
 
-    #Si el usuario no está registrado
-    if not GestorConsultas.existencia_usuario(id_usuario):
-        bot.reply_to(message, f"\U0001F614 *{message.from_user.first_name}*, no puedes implementar este comando, ya que no esta registrado.", parse_mode="Markdown")
-
-        return bot.send_message (
-        message.chat.id,
-        GestorConversacion.get_validacion_paciente(id_usuario,message.from_user.first_name, config.COMPANIA_SIGNOS),
-        parse_mode="Markdown")
-     
-    #Si es un Medico
-    if GestorConsultas.validar_medico(id_usuario):
-        return bot.reply_to(message, f"\U0001FA7A *Dr(a). {message.from_user.first_name}*, no puede implementar este comando, solo lo pueden usarlo pacientes.", parse_mode="Markdown")
-
     #Pasa todas las validaciones pruebas
-    bot.send_message(
-        message.chat.id,GestorConversacion.get_registro_signos(message.chat.first_name + " " + message.chat.last_name, pas, pad, fc, peso, fecha_toma),parse_mode="Markdown")
-
-    bot.register_next_step_handler(message, GestorMediciones.step_2_registro_signos, pas, pad, fc, peso, fecha_toma)
+    if check_user(message, id_usuario):
+        bot.send_message(
+            message.chat.id,GestorConversacion.get_registro_signos(message.chat.first_name + " " + message.chat.last_name, pas, pad, fc, peso, fecha_toma),parse_mode="Markdown")
+        bot.register_next_step_handler(message, GestorMediciones.step_2_registro_signos, pas, pad, fc, peso, fecha_toma)
 
 
 #ELIMINAR SIGNOS (ES)########################################################
@@ -147,49 +152,36 @@ def on_delete_signos(message):
     
     #Se llama la funcion que consulta en la base de datos las mediciones. 
     signo_borrar = GestorConsultas.consulta_signos(id_usuario,id_medicion)
-    
-    #Si el usuario no está registrado
-    if not GestorConsultas.existencia_usuario(id_usuario):
-        bot.reply_to(message, f"\U0001F614 *{message.from_user.first_name}*, no puedes implementar este comando, ya que no esta registrado.", parse_mode="Markdown")
+    if check_user(message, id_usuario):
+        #si no tiene signos
+        if not signo_borrar:
+            return bot.reply_to(message, 
+                f"\U0001F928 *{message.from_user.first_name}*, "
+                f"No has regitrado signos con el id: {id_medicion}\n\n" "Verifica e intenta nuevamente, puedes usar el comando:\n\n"
+                "*consultar signos|cs {Fecha inicial (dd-mm-aaaa)} {Fecha Final (dd-mm-aaaa)}* - para consultar sus signos registrados"
+                ,parse_mode="Markdown")   
 
-        return bot.send_message (
-        message.chat.id,
-        GestorConversacion.get_validacion_paciente(id_usuario,message.from_user.first_name, config.COMPANIA_SIGNOS),
+        #si el signo ya tiene una observacion
+        observacion = GestorConsultas.get_signo_observacion(id_medicion)
+        if observacion:
+            return bot.reply_to(message, 
+                f"\U0001F6AB No puedes eliminar esta medición porque tiene una observación: *\U0000203C {observacion.observacion} \U0000203C*",parse_mode="Markdown")  
+    
+        #Mostar Signo a Eliminar y solicitar confimacion de eliminacion
+        bot.send_message(message.chat.id,
+        GestorConversacion.get_signo_eliminar (
+        message.chat.first_name + " " + message.chat.last_name, 
+        signo_borrar.id,
+        signo_borrar.pas, 
+        signo_borrar.pad, 
+        signo_borrar.fc, 
+        signo_borrar.peso, 
+        signo_borrar.fecha_toma,
+        signo_borrar.fecha_registro),
         parse_mode="Markdown")
-     
-    #Si es un Medico
-    if GestorConsultas.validar_medico(id_usuario):
-        return bot.reply_to(message, f"\U0001FA7A *Dr(a). {message.from_user.first_name}*, no puede implementar este comando, solo lo pueden usarlo pacientes.", parse_mode="Markdown")  
 
-    #si no tiene signos
-    if not signo_borrar:
-        return bot.reply_to(message, 
-        f"\U0001F928 *{message.from_user.first_name}*, "
-        f"No has regitrado signos con el id: {id_medicion}\n\n" "Verifica e intenta nuevamente, puedes usar el comando:\n\n"
-        "*consultar signos|cs {Fecha inicial (dd-mm-aaaa)} {Fecha Final (dd-mm-aaaa)}* - para consultar sus signos registrados"
-        ,parse_mode="Markdown")   
-
-    #si el signo ya tiene una observacion
-    observacion = GestorConsultas.get_signo_observacion(id_medicion)
-    if observacion:
-        return bot.reply_to(message, 
-        f"\U0001F6AB No puedes eliminar esta medición porque tiene una observación: *\U0000203C {observacion.observacion} \U0000203C*",parse_mode="Markdown")  
-    
-    #Mostar Signo a Eliminar y solicitar confimacion de eliminacion
-    bot.send_message(message.chat.id,
-    GestorConversacion.get_signo_eliminar (
-    message.chat.first_name + " " + message.chat.last_name, 
-    signo_borrar.id,
-    signo_borrar.pas, 
-    signo_borrar.pad, 
-    signo_borrar.fc, 
-    signo_borrar.peso, 
-    signo_borrar.fecha_toma,
-    signo_borrar.fecha_registro),
-    parse_mode="Markdown")
-
-    #Recibir confirmacion de elminiacion y ejecutar la acción
-    bot.register_next_step_handler(message, GestorMediciones.step_2_eliminar_signos, signo_borrar.id)
+        #Recibir confirmacion de elminiacion y ejecutar la acción
+        bot.register_next_step_handler(message, GestorMediciones.step_2_eliminar_signos, signo_borrar.id)
 
 
 #CONSULTAR SIGNOS (CS) ########################################################
@@ -204,32 +196,20 @@ def on_get_signos(message):
     id_usuario = int(message.from_user.id)
     nombre_user = message.chat.first_name
     
-    #Si el usuario no está registrado
-    if not GestorConsultas.existencia_usuario(id_usuario):
-        bot.reply_to(message, f"\U0001F614 *{message.from_user.first_name}*, no puedes implementar este comando, ya que no esta registrado.", parse_mode="Markdown")
+    if check_user(message, id_usuario):
+        signos = GestorConsultas.get_signos(message.from_user.id, fecha_inicial, fecha_final) 
+        # En caso de que el usuario este registrado pero no tenga registros de signos vitales se le mostrara un mensaje
+        if not signos:
+            return bot.reply_to(message, "No existe registro de signos para el usuario " + nombre_user + "\n\n", parse_mode="Markdown")
 
-        return bot.send_message (
-        message.chat.id,
-        GestorConversacion.get_validacion_paciente(id_usuario,message.from_user.first_name, config.COMPANIA_SIGNOS),
-        parse_mode="Markdown")
-     
-    #Si es un Medico
-    if GestorConsultas.validar_medico(id_usuario):
-        return bot.reply_to(message, f"\U0001FA7A *Dr(a). {message.from_user.first_name}*, no puede implementar este comando, solo lo pueden usarlo pacientes.", parse_mode="Markdown")
-
-    signos = GestorConsultas.get_signos(message.from_user.id, fecha_inicial, fecha_final) 
-    # En caso de que el usuario este registrado pero no tenga registros de signos vitales se le mostrara un mensaje
-    if not signos:
-        return bot.reply_to(message, "No existe registro de signos para el usuario " + nombre_user + "\n\n", parse_mode="Markdown")
-
-    #si pasa todas las validaciones
-    text = "``` Listado de los signos del usuario: " + nombre_user + "\n"
-    text += f" Desde {fecha_inicial} hasta {fecha_final} \n"
-    text += f"|ID|Sistolica|Diastolica|F.Cardiaca|Peso|Observación| \n"
-    for sv in signos:
-        text += f"| {sv.id}|   {sv.pas}   |   {sv.pad}     | {sv.fc}   | {sv.peso} |{sv.observacion}| \n"
-    text += "```"
-    return bot.reply_to(message, text, parse_mode="Markdown")
+        #si pasa todas las validaciones
+        text = "``` Listado de los signos del usuario: " + nombre_user + "\n"
+        text += f" Desde {fecha_inicial} hasta {fecha_final} \n"
+        text += f"|ID|Sistolica|Diastolica|F.Cardiaca|Peso|Observación| \n"
+        for sv in signos:
+            text += f"| {sv.id}|   {sv.pas}   |   {sv.pad}     | {sv.fc}   | {sv.peso} |{sv.observacion}| \n"
+        text += "```"
+        return bot.reply_to(message, text, parse_mode="Markdown")
 ###############################################################################################################
 ###############################################################################################################
 
