@@ -5,20 +5,20 @@ un control mas efectivo en cuanto su estado de salud.
 El bot se registra con los el usuario @signos_vitales_bot y se encuentra en telegram con el 
 nombre de Bot Signos Vitales
 
-En la carpeta **<<RESOURCES>>** se encuentra la documentación de este proyecto
+En la carpeta <<RESOURCES>> se encuentra la documentación de este proyecto
 
-**Video de presentación del bot:** 
-[Ver Video](https://www.youtube.com/watch?v=yRGf2ueneRo&feature=youtu.be)
+Video de presentación del bot: 
+https://www.youtube.com/watch?v=yRGf2ueneRo&feature=youtu.be
 
 ----------------------------------------------------------------------------------------------------
 Bot Registro Signos Vitales (pyTelegramBot) v 0.1
        
 Fue desarrollado por los estudiantes de la Especializacion de Ingeniería de Software de la Universidad Autónoma de Manizales:
 
-    **Héctor Daniel Cardona** <hectord.cardonal@autonoma.edu.co>
-    **Yordan Castelblanco** <yordan.castelblancoj@autonoma.edu.co>
-    **Juan Alberto Vidal** <juana.vidalg@autonoma.edu.co>
-    **Elan Fco. Perea** <elanf.pereaa@autonoma.edu.co>
+    Héctor Daniel Cardona <hectord.cardonal@autonoma.edu.co>
+    Yordan Castelblanco <yordan.castelblancoj@autonoma.edu.co>
+    Juan Alberto Vidal <juana.vidalg@autonoma.edu.co>
+    Elan Fco. Perea <elanf.pereaa@autonoma.edu.co>
 
-    **2021**
+    2021
 ----------------------------------------------------------------------------------------------------
