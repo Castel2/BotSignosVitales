@@ -8,7 +8,7 @@ from config import bot
 ##################################################################################################
 # La confirmación de la eliminación de la medición.-SK
 def step_2_Registrar_observacion(message, idMedicion, id_user_tel, observacion):
-
+    
     observacion = Observacion(idMedicion, id_user_tel, observacion)
     #Confirmacion positiva de registro
     if message.text == "1":
